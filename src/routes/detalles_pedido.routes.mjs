@@ -5,5 +5,6 @@ const router = Router();
 
 router.post('/', detallePedidoController.crear);
 router.get('/pedido/:id_pedido', detallePedidoController.obtenerPorPedido);
+router.patch('/:id', detallePedidoController.actualizarParcial);
 
 export default router;

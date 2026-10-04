@@ -31,6 +31,22 @@ class ClienteModel {
         return resultado;
     }
 
+    // UPDATE PARCIAL (PATCH): actualiza solo los campos enviados
+    async actualizarParcial(id, cliente) {
+        const permitidas = ['nombre', 'apellido', 'dni', 'direccion', 'telefono'];
+        const campos = Object.entries(cliente).filter(([campo]) => permitidas.includes(campo));
+
+        // Si no llega ningún campo válido, no hay nada que modificar
+        if (campos.length === 0) return null;
+
+        const sets = campos.map(([campo]) => `${campo} = ?`).join(', ');
+        const valores = campos.map(([, valor]) => valor);
+
+        const query = `UPDATE clientes SET ${sets} WHERE id_cliente = ?`;
+        const [resultado] = await pool.execute(query, [...valores, id]);
+        return resultado;
+    }
+
     // DELETE
     async eliminar(id) {
         const query = 'DELETE FROM clientes WHERE id_cliente = ?';

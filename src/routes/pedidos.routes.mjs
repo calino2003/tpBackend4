@@ -7,6 +7,7 @@ router.post('/', pedidoController.crear);
 router.get('/', pedidoController.obtenerTodos);
 router.get('/:id', pedidoController.obtenerPorId);
 router.put('/:id', pedidoController.actualizar);
+router.patch('/:id', pedidoController.actualizarParcial);
 router.delete('/:id', pedidoController.eliminar);
 
 export default router;

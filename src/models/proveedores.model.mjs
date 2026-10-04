@@ -35,6 +35,22 @@ class ProveedorModel {
         return resultado;
     }
 
+    // UPDATE PARCIAL (PATCH): actualiza solo los campos enviados
+    async actualizarParcial(id, proveedor) {
+        const permitidas = ['razon_social', 'cuit', 'telefono', 'email'];
+        const campos = Object.entries(proveedor).filter(([campo]) => permitidas.includes(campo));
+
+        if (campos.length === 0) return null;
+
+        const sets = campos.map(([campo]) => `${campo} = ?`).join(', ');
+        const valores = campos.map(([, valor]) => valor);
+
+        const query = `UPDATE PROVEEDORES SET ${sets} WHERE id_proveedor = ?`;
+        const [resultado] = await pool.execute(query, [...valores, id]);
+
+        return resultado;
+    }
+
     // DELETE: Eliminar un proveedor
     async eliminar(id) {
         const query = 'DELETE FROM PROVEEDORES WHERE id_proveedor = ?';

@@ -31,6 +31,21 @@ class ProductoModel {
         return resultado;
     }
 
+    // UPDATE PARCIAL (PATCH): actualiza solo los campos enviados
+    async actualizarParcial(id, producto) {
+        const permitidas = ['nombre', 'descripcion', 'precio_unitario', 'stock', 'id_proveedor'];
+        const campos = Object.entries(producto).filter(([campo]) => permitidas.includes(campo));
+
+        if (campos.length === 0) return null;
+
+        const sets = campos.map(([campo]) => `${campo} = ?`).join(', ');
+        const valores = campos.map(([, valor]) => valor);
+
+        const query = `UPDATE productos SET ${sets} WHERE id_producto = ?`;
+        const [resultado] = await pool.execute(query, [...valores, id]);
+        return resultado;
+    }
+
     // DELETE
     async eliminar(id) {
         const query = 'DELETE FROM productos WHERE id_producto = ?';

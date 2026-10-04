@@ -53,6 +53,21 @@ class PedidoModel {
         return resultado;
     }
 
+    // UPDATE PARCIAL (PATCH): actualiza solo los campos enviados
+    async actualizarParcial(id, pedido) {
+        const permitidas = ['total', 'id_cliente', 'id_empleado', 'id_compania'];
+        const campos = Object.entries(pedido).filter(([campo]) => permitidas.includes(campo));
+
+        if (campos.length === 0) return null;
+
+        const sets = campos.map(([campo]) => `${campo} = ?`).join(', ');
+        const valores = campos.map(([, valor]) => valor);
+
+        const query = `UPDATE pedidos SET ${sets} WHERE id_pedido = ?`;
+        const [resultado] = await pool.execute(query, [...valores, id]);
+        return resultado;
+    }
+
     // DELETE
     async eliminar(id) {
         const query = 'DELETE FROM pedidos WHERE id_pedido = ?';

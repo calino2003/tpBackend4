@@ -31,6 +31,21 @@ class EmpleadoModel {
         return resultado;
     }
 
+    // UPDATE PARCIAL (PATCH): actualiza solo los campos enviados
+    async actualizarParcial(id, empleado) {
+        const permitidas = ['nombre', 'apellido', 'cargo'];
+        const campos = Object.entries(empleado).filter(([campo]) => permitidas.includes(campo));
+
+        if (campos.length === 0) return null;
+
+        const sets = campos.map(([campo]) => `${campo} = ?`).join(', ');
+        const valores = campos.map(([, valor]) => valor);
+
+        const query = `UPDATE empleados SET ${sets} WHERE id_empleado = ?`;
+        const [resultado] = await pool.execute(query, [...valores, id]);
+        return resultado;
+    }
+
     // DELETE
     async eliminar(id) {
         const query = 'DELETE FROM empleados WHERE id_empleado = ?';

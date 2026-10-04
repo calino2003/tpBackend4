@@ -31,6 +31,21 @@ class CompaniaModel {
         return resultado;
     }
 
+    // UPDATE PARCIAL (PATCH): actualiza solo los campos enviados
+    async actualizarParcial(id, compania) {
+        const permitidas = ['nombre', 'telefono'];
+        const campos = Object.entries(compania).filter(([campo]) => permitidas.includes(campo));
+
+        if (campos.length === 0) return null;
+
+        const sets = campos.map(([campo]) => `${campo} = ?`).join(', ');
+        const valores = campos.map(([, valor]) => valor);
+
+        const query = `UPDATE companias_envio SET ${sets} WHERE id_compania = ?`;
+        const [resultado] = await pool.execute(query, [...valores, id]);
+        return resultado;
+    }
+
     // DELETE
     async eliminar(id) {
         const query = 'DELETE FROM companias_envio WHERE id_compania = ?';

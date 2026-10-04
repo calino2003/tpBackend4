@@ -26,6 +26,21 @@ class DetallePedidoModel {
         const [filas] = await pool.query(query, [id_pedido]);
         return filas;
     }
+
+    // UPDATE PARCIAL (PATCH): actualiza solo los campos enviados de una línea de detalle
+    async actualizarParcial(id, detalle) {
+        const permitidas = ['id_pedido', 'id_producto', 'cantidad', 'subtotal'];
+        const campos = Object.entries(detalle).filter(([campo]) => permitidas.includes(campo));
+
+        if (campos.length === 0) return null;
+
+        const sets = campos.map(([campo]) => `${campo} = ?`).join(', ');
+        const valores = campos.map(([, valor]) => valor);
+
+        const query = `UPDATE detalles_pedido SET ${sets} WHERE id_detalle = ?`;
+        const [resultado] = await pool.execute(query, [...valores, id]);
+        return resultado;
+    }
 }
 
 export default new DetallePedidoModel();

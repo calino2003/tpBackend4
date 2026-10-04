@@ -89,6 +89,26 @@ class PedidoController {
             res.status(500).json({ error: "Error interno del servidor." });
         }
     }
+
+    async actualizarParcial(req, res) {
+        try {
+            const { id } = req.params;
+            const resultado = await pedidoModel.actualizarParcial(id, req.body);
+
+            if (!resultado) {
+                return res.status(400).json({ error: "Debe enviar al menos un campo válido a modificar." });
+            }
+
+            if (resultado.affectedRows === 0) {
+                return res.status(404).json({ error: "Pedido no encontrado." });
+            }
+
+            res.status(200).json({ mensaje: "Pedido actualizado parcialmente" });
+        } catch (error) {
+            console.error("Error al actualizar pedido (parcial):", error);
+            res.status(500).json({ error: "Error interno del servidor." });
+        }
+    }
 }
 
 export default new PedidoController();
