@@ -1,0 +1,6 @@
+falta nodemon 
+
+tirar bd en la raiz
+
+pedidos
+
