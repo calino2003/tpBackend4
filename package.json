@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "node --watch src/app.mjs"
-  }
-  ,
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -14,5 +13,8 @@
   "dependencies": {
     "express": "^5.2.1",
     "mysql2": "^3.24.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
