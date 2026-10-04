@@ -1,18 +1,12 @@
 import { Router } from 'express';
-import { 
-    crearPedido, 
-    obtenerPedidos, 
-    obtenerPedidoPorId, 
-    actualizarPedido, 
-    eliminarPedido 
-} from '../controllers/pedidos.controller.mjs';
+import pedidoController from '../controllers/pedidos.controller.mjs';
 
 const router = Router();
 
-router.post('/', crearPedido);
-router.get('/', obtenerPedidos);
-router.get('/:id', obtenerPedidoPorId);
-router.put('/:id', actualizarPedido);
-router.delete('/:id', eliminarPedido);
+router.post('/', pedidoController.crear);
+router.get('/', pedidoController.obtenerTodos);
+router.get('/:id', pedidoController.obtenerPorId);
+router.put('/:id', pedidoController.actualizar);
+router.delete('/:id', pedidoController.eliminar);
 
 export default router;

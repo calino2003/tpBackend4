@@ -1,14 +1,14 @@
 import { Router } from 'express';
-import { crearProveedor, obtenerProveedores, obtenerProveedorPorId, actualizarProveedor, eliminarProveedor } from '../controllers/proveedores.controller.mjs';
+import proveedorController from '../controllers/proveedores.controller.mjs';
 
 const router = Router();
 
-router.post('/', crearProveedor);
-router.get('/', obtenerProveedores);
-router.get('/:id', obtenerProveedorPorId);
+router.post('/', proveedorController.crear);
+router.get('/', proveedorController.obtenerTodos);
+router.get('/:id', proveedorController.obtenerPorId);
 
 // Agregamos las dos rutas nuevas con parámetro ID
-router.put('/:id', actualizarProveedor);
-router.delete('/:id', eliminarProveedor);
+router.put('/:id', proveedorController.actualizar);
+router.delete('/:id', proveedorController.eliminar);
 
 export default router;
