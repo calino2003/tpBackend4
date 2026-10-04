@@ -15,6 +15,13 @@ export const obtenerCompaniasDb = async () => {
     return filas;
 };
 
+// READ by ID
+export const obtenerCompaniaPorIdDb = async (id) => {
+    const query = 'SELECT * FROM companias_envio WHERE id_compania = ?';
+    const [filas] = await pool.execute(query, [id]);
+    return filas[0];
+};
+
 // UPDATE
 export const actualizarCompaniaDb = async (id, compania) => {
     const { nombre, telefono } = compania;

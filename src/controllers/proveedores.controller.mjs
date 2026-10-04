@@ -1,4 +1,4 @@
-import { crearProveedorDb, obtenerProveedoresDb, actualizarProveedorDb, eliminarProveedorDb } from '../models/proveedores.model.mjs';
+import { crearProveedorDb, obtenerProveedoresDb, obtenerProveedorPorIdDb, actualizarProveedorDb, eliminarProveedorDb } from '../models/proveedores.model.mjs';
 
 export const crearProveedor = async (req, res) => {
     try {
@@ -20,6 +20,22 @@ export const obtenerProveedores = async (req, res) => {
         res.status(200).json(proveedores);
     } catch (error) {
         console.error("Error al obtener proveedores:", error);
+        res.status(500).json({ error: "Error al consultar la base de datos." });
+    }
+};
+
+export const obtenerProveedorPorId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const proveedor = await obtenerProveedorPorIdDb(id);
+
+        if (!proveedor) {
+            return res.status(404).json({ error: "Proveedor no encontrado." });
+        }
+
+        res.status(200).json(proveedor);
+    } catch (error) {
+        console.error("Error al obtener el proveedor:", error);
         res.status(500).json({ error: "Error al consultar la base de datos." });
     }
 };

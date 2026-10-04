@@ -1,4 +1,4 @@
-import { crearClienteDb, obtenerClientesDb, actualizarClienteDb, eliminarClienteDb } from '../models/clientes.model.mjs';
+import { crearClienteDb, obtenerClientesDb, obtenerClientePorIdDb, actualizarClienteDb, eliminarClienteDb } from '../models/clientes.model.mjs';
 
 export const crearCliente = async (req, res) => {
     try {
@@ -23,6 +23,22 @@ export const obtenerClientes = async (req, res) => {
         res.status(200).json(clientes);
     } catch (error) {
         console.error("Error al obtener clientes:", error);
+        res.status(500).json({ error: "Error al consultar la base de datos." });
+    }
+};
+
+export const obtenerClientePorId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const cliente = await obtenerClientePorIdDb(id);
+
+        if (!cliente) {
+            return res.status(404).json({ error: "Cliente no encontrado." });
+        }
+
+        res.status(200).json(cliente);
+    } catch (error) {
+        console.error("Error al obtener el cliente:", error);
         res.status(500).json({ error: "Error al consultar la base de datos." });
     }
 };

@@ -15,6 +15,13 @@ export const obtenerProductosDb = async () => {
     return filas;
 };
 
+// READ by ID
+export const obtenerProductoPorIdDb = async (id) => {
+    const query = 'SELECT * FROM productos WHERE id_producto = ?';
+    const [filas] = await pool.execute(query, [id]);
+    return filas[0];
+};
+
 // UPDATE
 export const actualizarProductoDb = async (id, producto) => {
     const { nombre, descripcion, precio_unitario, stock, id_proveedor } = producto;

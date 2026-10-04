@@ -1,4 +1,4 @@
-import { crearCompaniaDb, obtenerCompaniasDb, actualizarCompaniaDb, eliminarCompaniaDb } from '../models/companias.model.mjs';
+import { crearCompaniaDb, obtenerCompaniasDb, obtenerCompaniaPorIdDb, actualizarCompaniaDb, eliminarCompaniaDb } from '../models/companias.model.mjs';
 
 export const crearCompania = async (req, res) => {
     try {
@@ -22,6 +22,22 @@ export const obtenerCompanias = async (req, res) => {
         res.status(200).json(companias);
     } catch (error) {
         console.error("Error al obtener compañías de envío:", error);
+        res.status(500).json({ error: "Error al consultar la base de datos." });
+    }
+};
+
+export const obtenerCompaniaPorId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const compania = await obtenerCompaniaPorIdDb(id);
+
+        if (!compania) {
+            return res.status(404).json({ error: "Compañía de envío no encontrada." });
+        }
+
+        res.status(200).json(compania);
+    } catch (error) {
+        console.error("Error al obtener la compañía de envío:", error);
         res.status(500).json({ error: "Error al consultar la base de datos." });
     }
 };

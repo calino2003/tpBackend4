@@ -1,4 +1,4 @@
-import { crearProductoDb, obtenerProductosDb, actualizarProductoDb, eliminarProductoDb } from '../models/productos.model.mjs';
+import { crearProductoDb, obtenerProductosDb, obtenerProductoPorIdDb, actualizarProductoDb, eliminarProductoDb } from '../models/productos.model.mjs';
 
 export const crearProducto = async (req, res) => {
     try {
@@ -20,6 +20,22 @@ export const obtenerProductos = async (req, res) => {
         res.status(200).json(productos);
     } catch (error) {
         console.error("Error al obtener productos:", error);
+        res.status(500).json({ error: "Error al consultar la base de datos." });
+    }
+};
+
+export const obtenerProductoPorId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const producto = await obtenerProductoPorIdDb(id);
+
+        if (!producto) {
+            return res.status(404).json({ error: "Producto no encontrado." });
+        }
+
+        res.status(200).json(producto);
+    } catch (error) {
+        console.error("Error al obtener el producto:", error);
         res.status(500).json({ error: "Error al consultar la base de datos." });
     }
 };

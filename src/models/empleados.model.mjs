@@ -15,6 +15,13 @@ export const obtenerEmpleadosDb = async () => {
     return filas;
 };
 
+// READ by ID
+export const obtenerEmpleadoPorIdDb = async (id) => {
+    const query = 'SELECT * FROM empleados WHERE id_empleado = ?';
+    const [filas] = await pool.execute(query, [id]);
+    return filas[0];
+};
+
 // UPDATE
 export const actualizarEmpleadoDb = async (id, empleado) => {
     const { nombre, apellido, cargo } = empleado;

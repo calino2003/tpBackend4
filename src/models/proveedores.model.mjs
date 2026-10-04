@@ -18,6 +18,12 @@ export const obtenerProveedoresDb = async () => {
     return filas;
 };
 
+// GET: Obtener un proveedor por su ID
+export const obtenerProveedorPorIdDb = async (id) => {
+    const [filas] = await pool.execute('SELECT * FROM PROVEEDORES WHERE id_proveedor = ?', [id]);
+    return filas[0];
+};
+
 // PUT: Actualizar un proveedor existente
 export const actualizarProveedorDb = async (id, proveedor) => {
     const { razon_social, cuit, telefono, email } = proveedor;

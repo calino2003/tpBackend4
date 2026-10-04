@@ -1,4 +1,4 @@
-import { crearEmpleadoDb, obtenerEmpleadosDb, actualizarEmpleadoDb, eliminarEmpleadoDb } from '../models/empleados.model.mjs';
+import { crearEmpleadoDb, obtenerEmpleadosDb, obtenerEmpleadoPorIdDb, actualizarEmpleadoDb, eliminarEmpleadoDb } from '../models/empleados.model.mjs';
 
 export const crearEmpleado = async (req, res) => {
     try {
@@ -22,6 +22,22 @@ export const obtenerEmpleados = async (req, res) => {
         res.status(200).json(empleados);
     } catch (error) {
         console.error("Error al obtener empleados:", error);
+        res.status(500).json({ error: "Error al consultar la base de datos." });
+    }
+};
+
+export const obtenerEmpleadoPorId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const empleado = await obtenerEmpleadoPorIdDb(id);
+
+        if (!empleado) {
+            return res.status(404).json({ error: "Empleado no encontrado." });
+        }
+
+        res.status(200).json(empleado);
+    } catch (error) {
+        console.error("Error al obtener el empleado:", error);
         res.status(500).json({ error: "Error al consultar la base de datos." });
     }
 };
