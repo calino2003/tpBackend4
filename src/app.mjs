@@ -5,6 +5,9 @@ import productosRoutes from './routes/productos.routes.mjs';
 import clientesRoutes from './routes/clientes.routes.mjs';
 import empleadosRoutes from './routes/empleados.routes.mjs';
 import companiasRoutes from './routes/companias.routes.mjs';
+import pedidosRoutes from './routes/pedidos.routes.mjs';
+import detallesPedidoRoutes from './routes/detalles_pedido.routes.mjs'; 
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,4 +34,6 @@ app.listen(PORT, () => {
 app.use('/api/productos', productosRoutes);
 app.use('/api/clientes', clientesRoutes);
 app.use('/api/empleados', empleadosRoutes);
-app.use('/api/companias', companiasRoutes); 
+app.use('/api/companias', companiasRoutes);
+app.use('/api/pedidos', pedidosRoutes);  
+app.use('/api/detalles', detallesPedidoRoutes);
