@@ -1,8 +1,7 @@
 import detallePedidoModel from '../models/detalles_pedido.model.mjs';
 
 class DetallePedidoController {
-    // Agregamos 'next'
-    async crear(req, res, next) {
+    async crear(req, res) {
         try {
             const { id_pedido, id_producto, cantidad, subtotal } = req.body;
 
@@ -13,24 +12,25 @@ class DetallePedidoController {
             const resultado = await detallePedidoModel.crear(req.body);
             res.status(201).json({ mensaje: "Detalle agregado al pedido exitosamente", id_detalle: resultado.insertId });
         } catch (error) {
-            // Si el producto o el pedido no existen en la BD, el middleware global lo ataja acá
-            next(error);
+            console.error("Error al crear detalle:", error);
+            res.status(500).json({ error: "Error interno del servidor." });
         }
     }
 
-    async obtenerPorPedido(req, res, next) {
+    async obtenerPorPedido(req, res) {
         try {
             // En este caso, el ID del pedido viene por la URL (ej: /api/detalles/pedido/1)
             const { id_pedido } = req.params;
-            const detalles = await detallePedidoModel.obtenerPorPedido(id_pedido);
+            const detalles = await detallePedidoModel.obtenerPorPedido(id_pedido, req.query);
 
             res.status(200).json(detalles);
         } catch (error) {
-            next(error);
+            console.error("Error al obtener detalles:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 
-    async actualizarParcial(req, res, next) {
+    async actualizarParcial(req, res) {
         try {
             const { id } = req.params;
             const resultado = await detallePedidoModel.actualizarParcial(id, req.body);
@@ -45,7 +45,19 @@ class DetallePedidoController {
 
             res.status(200).json({ mensaje: "Detalle actualizado parcialmente" });
         } catch (error) {
-            next(error);
+            console.error("Error al actualizar detalle (parcial):", error);
+            res.status(500).json({ error: "Error interno del servidor." });
+        }
+    }
+
+    // AGGREGATION: /api/detalles/mas-vendidos (SUM + JOIN + GROUP BY)
+    async productosMasVendidos(req, res) {
+        try {
+            const productos = await detallePedidoModel.obtenerProductosMasVendidos();
+            res.status(200).json(productos);
+        } catch (error) {
+            console.error("Error al obtener productos más vendidos:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 }

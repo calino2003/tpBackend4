@@ -9,9 +9,49 @@ class EmpleadoModel {
         return resultado;
     }
 
-    // READ
-    async obtenerTodos() {
-        const query = 'SELECT * FROM empleados';
+    // READ (acepta filtrados opcionales: /api/empleados?nombre=...&cargo=...)
+    async obtenerTodos(filtros = {}) {
+        const mapaFiltros = {
+            nombre:   { columna: 'nombre', like: true },
+            apellido: { columna: 'apellido', like: true },
+            cargo:    { columna: 'cargo', like: true }
+        };
+
+        const condiciones = [];
+        const valores = [];
+
+        for (const [parametro, regla] of Object.entries(mapaFiltros)) {
+            const valor = filtros[parametro];
+            if (valor === undefined || valor === '') continue;
+
+            if (regla.like) {
+                condiciones.push(`${regla.columna} LIKE ?`);
+                valores.push(`%${valor}%`);
+            } else {
+                const operador = regla.operador || '=';
+                condiciones.push(`${regla.columna} ${operador} ?`);
+                valores.push(valor);
+            }
+        }
+
+        let query = 'SELECT * FROM empleados';
+        if (condiciones.length > 0) query += ` WHERE ${condiciones.join(' AND ')}`;
+
+        const [filas] = await pool.query(query, valores);
+        return filas;
+    }
+
+    // AGGREGATION (SUM + COUNT + GROUP BY): pedidos atendidos y vendido por empleado
+    async obtenerEstadisticas() {
+        const query = `
+            SELECT e.id_empleado, e.nombre, e.apellido,
+                   COUNT(p.id_pedido) AS pedidos,
+                   IFNULL(SUM(p.total), 0) AS total_vendido
+            FROM empleados e
+            LEFT JOIN pedidos p ON e.id_empleado = p.id_empleado
+            GROUP BY e.id_empleado, e.nombre, e.apellido
+            ORDER BY total_vendido DESC
+        `;
         const [filas] = await pool.query(query);
         return filas;
     }

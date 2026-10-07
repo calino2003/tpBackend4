@@ -9,8 +9,16 @@ class DetallePedidoModel {
         return resultado;
     }
 
-    // READ: Obtener todos los detalles de un pedido específico cruzando con productos
-    async obtenerPorPedido(id_pedido) {
+    // READ: Detalles de un pedido específico (filtro opcional: /api/detalles/pedido/1?producto=1)
+    async obtenerPorPedido(id_pedido, filtros = {}) {
+        const condiciones = ['dp.id_pedido = ?'];
+        const valores = [id_pedido];
+
+        if (filtros.producto !== undefined && filtros.producto !== '') {
+            condiciones.push('dp.id_producto = ?');
+            valores.push(filtros.producto);
+        }
+
         const query = `
             SELECT
                 dp.id_detalle,
@@ -21,9 +29,24 @@ class DetallePedidoModel {
                 p.precio_unitario AS producto_precio
             FROM detalles_pedido dp
             LEFT JOIN productos p ON dp.id_producto = p.id_producto
-            WHERE dp.id_pedido = ?
+            WHERE ${condiciones.join(' AND ')}
         `;
-        const [filas] = await pool.query(query, [id_pedido]);
+        const [filas] = await pool.query(query, valores);
+        return filas;
+    }
+
+    // AGGREGATION (SUM + JOIN + GROUP BY): productos más vendidos
+    async obtenerProductosMasVendidos() {
+        const query = `
+            SELECT p.id_producto, p.nombre,
+                   SUM(d.cantidad) AS unidades_vendidas,
+                   SUM(d.subtotal) AS facturado
+            FROM detalles_pedido d
+            INNER JOIN productos p ON d.id_producto = p.id_producto
+            GROUP BY p.id_producto, p.nombre
+            ORDER BY unidades_vendidas DESC
+        `;
+        const [filas] = await pool.query(query);
         return filas;
     }
 

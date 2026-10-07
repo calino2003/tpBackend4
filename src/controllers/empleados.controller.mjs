@@ -1,8 +1,7 @@
 import empleadoModel from '../models/empleados.model.mjs';
 
 class EmpleadoController {
-    // 1. Agregamos 'next' a los parámetros
-    async crear(req, res, next) {
+    async crear(req, res) {
         try {
             const { nombre, apellido } = req.body;
 
@@ -13,21 +12,22 @@ class EmpleadoController {
             const resultado = await empleadoModel.crear(req.body);
             res.status(201).json({ mensaje: "Empleado creado exitosamente", id_empleado: resultado.insertId });
         } catch (error) {
-            // 2. Derivamos el error al middleware global
-            next(error);
+            console.error("Error al crear empleado:", error);
+            res.status(500).json({ error: "Error interno del servidor." });
         }
     }
 
-    async obtenerTodos(req, res, next) {
+    async obtenerTodos(req, res) {
         try {
-            const empleados = await empleadoModel.obtenerTodos();
+            const empleados = await empleadoModel.obtenerTodos(req.query);
             res.status(200).json(empleados);
         } catch (error) {
-            next(error);
+            console.error("Error al obtener empleados:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 
-    async obtenerPorId(req, res, next) {
+    async obtenerPorId(req, res) {
         try {
             const { id } = req.params;
             const empleado = await empleadoModel.obtenerPorId(id);
@@ -38,11 +38,12 @@ class EmpleadoController {
 
             res.status(200).json(empleado);
         } catch (error) {
-            next(error);
+            console.error("Error al obtener el empleado:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 
-    async actualizar(req, res, next) {
+    async actualizar(req, res) {
         try {
             const { id } = req.params;
             const resultado = await empleadoModel.actualizar(id, req.body);
@@ -52,11 +53,12 @@ class EmpleadoController {
             }
             res.status(200).json({ mensaje: "Empleado actualizado exitosamente" });
         } catch (error) {
-            next(error);
+            console.error("Error al actualizar empleado:", error);
+            res.status(500).json({ error: "Error interno del servidor." });
         }
     }
 
-    async eliminar(req, res, next) {
+    async eliminar(req, res) {
         try {
             const { id } = req.params;
             const resultado = await empleadoModel.eliminar(id);
@@ -66,11 +68,12 @@ class EmpleadoController {
             }
             res.status(200).json({ mensaje: "Empleado eliminado exitosamente" });
         } catch (error) {
-            next(error);
+            console.error("Error al eliminar empleado:", error);
+            res.status(500).json({ error: "Error interno del servidor." });
         }
     }
 
-    async actualizarParcial(req, res, next) {
+    async actualizarParcial(req, res) {
         try {
             const { id } = req.params;
             const resultado = await empleadoModel.actualizarParcial(id, req.body);
@@ -85,7 +88,19 @@ class EmpleadoController {
 
             res.status(200).json({ mensaje: "Empleado actualizado parcialmente" });
         } catch (error) {
-            next(error);
+            console.error("Error al actualizar empleado (parcial):", error);
+            res.status(500).json({ error: "Error interno del servidor." });
+        }
+    }
+
+    // AGGREGATION: /api/empleados/estadisticas (SUM + COUNT + GROUP BY + JOIN)
+    async estadisticas(req, res) {
+        try {
+            const estadisticas = await empleadoModel.obtenerEstadisticas();
+            res.status(200).json(estadisticas);
+        } catch (error) {
+            console.error("Error al obtener estadísticas de empleados:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 }

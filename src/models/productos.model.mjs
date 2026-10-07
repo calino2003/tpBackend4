@@ -9,11 +9,52 @@ class ProductoModel {
         return resultado;
     }
 
-    // READ
-    async obtenerTodos() {
-        const query = 'SELECT * FROM productos';
-        const [filas] = await pool.query(query);
+    // READ (acepta filtrados opcionales: /api/productos?nombre=...&stock_min=10)
+    async obtenerTodos(filtros = {}) {
+        const mapaFiltros = {
+            nombre:     { columna: 'nombre', like: true },
+            stock_min:  { columna: 'stock', operador: '>=' },
+            stock_max:  { columna: 'stock', operador: '<=' },
+            precio_min: { columna: 'precio_unitario', operador: '>=' },
+            proveedor:  { columna: 'id_proveedor' }
+        };
+
+        const condiciones = [];
+        const valores = [];
+
+        for (const [parametro, regla] of Object.entries(mapaFiltros)) {
+            const valor = filtros[parametro];
+            if (valor === undefined || valor === '') continue;
+
+            if (regla.like) {
+                condiciones.push(`${regla.columna} LIKE ?`);
+                valores.push(`%${valor}%`);
+            } else {
+                const operador = regla.operador || '=';
+                condiciones.push(`${regla.columna} ${operador} ?`);
+                valores.push(valor);
+            }
+        }
+
+        let query = 'SELECT * FROM productos';
+        if (condiciones.length > 0) query += ` WHERE ${condiciones.join(' AND ')}`;
+
+        const [filas] = await pool.query(query, valores);
         return filas;
+    }
+
+    // AGGREGATION: COUNT, SUM, AVG, MAX y MIN en una sola consulta
+    async obtenerEstadisticas() {
+        const query = `
+            SELECT COUNT(*) AS cantidad,
+                   SUM(stock) AS stock_total,
+                   AVG(precio_unitario) AS precio_promedio,
+                   MAX(precio_unitario) AS precio_maximo,
+                   MIN(precio_unitario) AS precio_minimo
+            FROM productos
+        `;
+        const [filas] = await pool.query(query);
+        return filas[0];
     }
 
     // READ by ID

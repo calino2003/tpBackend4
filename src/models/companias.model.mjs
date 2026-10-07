@@ -9,9 +9,46 @@ class CompaniaModel {
         return resultado;
     }
 
-    // READ
-    async obtenerTodos() {
-        const query = 'SELECT * FROM companias_envio';
+    // READ (acepta filtrados opcionales: /api/companias?nombre=...)
+    async obtenerTodos(filtros = {}) {
+        const mapaFiltros = {
+            nombre:  { columna: 'nombre', like: true },
+            telefono: { columna: 'telefono' }
+        };
+
+        const condiciones = [];
+        const valores = [];
+
+        for (const [parametro, regla] of Object.entries(mapaFiltros)) {
+            const valor = filtros[parametro];
+            if (valor === undefined || valor === '') continue;
+
+            if (regla.like) {
+                condiciones.push(`${regla.columna} LIKE ?`);
+                valores.push(`%${valor}%`);
+            } else {
+                const operador = regla.operador || '=';
+                condiciones.push(`${regla.columna} ${operador} ?`);
+                valores.push(valor);
+            }
+        }
+
+        let query = 'SELECT * FROM companias_envio';
+        if (condiciones.length > 0) query += ` WHERE ${condiciones.join(' AND ')}`;
+
+        const [filas] = await pool.query(query, valores);
+        return filas;
+    }
+
+    // AGGREGATION (COUNT + GROUP BY): pedidos que envió cada compañía
+    async obtenerEstadisticas() {
+        const query = `
+            SELECT c.id_compania, c.nombre, COUNT(p.id_pedido) AS pedidos
+            FROM companias_envio c
+            LEFT JOIN pedidos p ON c.id_compania = p.id_compania
+            GROUP BY c.id_compania, c.nombre
+            ORDER BY pedidos DESC
+        `;
         const [filas] = await pool.query(query);
         return filas;
     }

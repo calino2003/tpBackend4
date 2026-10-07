@@ -5,6 +5,7 @@ const router = Router();
 
 router.post('/', detallePedidoController.crear);
 router.get('/pedido/:id_pedido', detallePedidoController.obtenerPorPedido);
+router.get('/mas-vendidos', detallePedidoController.productosMasVendidos);
 router.patch('/:id', detallePedidoController.actualizarParcial);
 
 export default router;

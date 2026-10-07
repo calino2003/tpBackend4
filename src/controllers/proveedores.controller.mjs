@@ -1,34 +1,31 @@
 import proveedorModel from '../models/proveedores.model.mjs';
 
 class ProveedorController {
-    // 1. Agregamos el parámetro 'next'
-    async crear(req, res, next) {
+    async crear(req, res) {
         try {
             const { razon_social, cuit } = req.body;
-            
-            // Validación de negocio intacta
             if (!razon_social || !cuit) {
                 return res.status(400).json({ error: "La razón social y el CUIT son obligatorios" });
             }
-            
             const resultado = await proveedorModel.crear(req.body);
             res.status(201).json({ mensaje: "Proveedor creado exitosamente", id_proveedor: resultado.insertId });
         } catch (error) {
-            // 2. Delegamos el error (ej: CUIT duplicado)
-            next(error);
+            console.error("Error al crear proveedor:", error);
+            res.status(500).json({ error: "Error interno del servidor al procesar el proveedor." });
         }
     }
 
-    async obtenerTodos(req, res, next) {
+    async obtenerTodos(req, res) {
         try {
-            const proveedores = await proveedorModel.obtenerTodos();
+            const proveedores = await proveedorModel.obtenerTodos(req.query);
             res.status(200).json(proveedores);
         } catch (error) {
-            next(error);
+            console.error("Error al obtener proveedores:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 
-    async obtenerPorId(req, res, next) {
+    async obtenerPorId(req, res) {
         try {
             const { id } = req.params;
             const proveedor = await proveedorModel.obtenerPorId(id);
@@ -39,11 +36,12 @@ class ProveedorController {
 
             res.status(200).json(proveedor);
         } catch (error) {
-            next(error);
+            console.error("Error al obtener el proveedor:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 
-    async actualizar(req, res, next) {
+    async actualizar(req, res) {
         try {
             const { id } = req.params;
             const resultado = await proveedorModel.actualizar(id, req.body);
@@ -53,11 +51,12 @@ class ProveedorController {
             }
             res.status(200).json({ mensaje: "Proveedor actualizado exitosamente" });
         } catch (error) {
-            next(error);
+            console.error("Error al actualizar proveedor:", error);
+            res.status(500).json({ error: "Error interno del servidor." });
         }
     }
 
-    async eliminar(req, res, next) {
+    async eliminar(req, res) {
         try {
             const { id } = req.params;
             const resultado = await proveedorModel.eliminar(id);
@@ -67,12 +66,12 @@ class ProveedorController {
             }
             res.status(200).json({ mensaje: "Proveedor eliminado exitosamente" });
         } catch (error) {
-            // Ataja si se intenta borrar un proveedor que ya tiene productos asociados
-            next(error);
+            console.error("Error al eliminar proveedor:", error);
+            res.status(500).json({ error: "Error interno del servidor." });
         }
     }
 
-    async actualizarParcial(req, res, next) {
+    async actualizarParcial(req, res) {
         try {
             const { id } = req.params;
             const resultado = await proveedorModel.actualizarParcial(id, req.body);
@@ -87,7 +86,19 @@ class ProveedorController {
 
             res.status(200).json({ mensaje: "Proveedor actualizado parcialmente" });
         } catch (error) {
-            next(error);
+            console.error("Error al actualizar proveedor (parcial):", error);
+            res.status(500).json({ error: "Error interno del servidor." });
+        }
+    }
+
+    // AGGREGATION: /api/proveedores/estadisticas (COUNT + GROUP BY + JOIN)
+    async estadisticas(req, res) {
+        try {
+            const estadisticas = await proveedorModel.obtenerEstadisticas();
+            res.status(200).json(estadisticas);
+        } catch (error) {
+            console.error("Error al obtener estadísticas de proveedores:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 }

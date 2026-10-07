@@ -5,6 +5,7 @@ const router = Router();
 
 router.post('/', clienteController.crear);
 router.get('/', clienteController.obtenerTodos);
+router.get('/estadisticas', clienteController.estadisticas);
 router.get('/:id', clienteController.obtenerPorId);
 router.put('/:id', clienteController.actualizar);
 router.patch('/:id', clienteController.actualizarParcial);

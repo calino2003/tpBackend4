@@ -10,9 +10,34 @@ class PedidoModel {
         return resultado;
     }
 
-    // READ (Acá aplicamos los JOINs)
-    async obtenerTodos() {
-        const query = `
+    // READ (Acá aplicamos los JOINs + filtrados opcionales)
+    async obtenerTodos(filtros = {}) {
+        // Whitelist: los filtros apuntan a los alias de las tablas del JOIN
+        const mapaFiltros = {
+            cliente:  { columna: 'c.nombre', like: true },
+            empleado: { columna: 'e.nombre', like: true },
+            desde:    { columna: 'p.fecha', operador: '>=' },   // /api/pedidos?desde=2026-01-01
+            hasta:    { columna: 'p.fecha', operador: '<'  }    // /api/pedidos?hasta=2026-12-31
+        };
+
+        const condiciones = [];
+        const valores = [];
+
+        for (const [parametro, regla] of Object.entries(mapaFiltros)) {
+            const valor = filtros[parametro];
+            if (valor === undefined || valor === '') continue;
+
+            if (regla.like) {
+                condiciones.push(`${regla.columna} LIKE ?`);
+                valores.push(`%${valor}%`);
+            } else {
+                const operador = regla.operador || '=';
+                condiciones.push(`${regla.columna} ${operador} ?`);
+                valores.push(valor);
+            }
+        }
+
+        let query = `
             SELECT
                 p.id_pedido,
                 p.fecha,
@@ -26,6 +51,38 @@ class PedidoModel {
             LEFT JOIN clientes c ON p.id_cliente = c.id_cliente
             LEFT JOIN empleados e ON p.id_empleado = e.id_empleado
             LEFT JOIN companias_envio env ON p.id_compania = env.id_compania
+        `;
+
+        if (condiciones.length > 0) query += ` WHERE ${condiciones.join(' AND ')}`;
+
+        const [filas] = await pool.query(query, valores);
+        return filas;
+    }
+
+    // AGGREGATION: COUNT, SUM, AVG, MAX y MIN sobre los pedidos
+    async obtenerEstadisticas() {
+        const query = `
+            SELECT COUNT(*) AS cantidad,
+                   SUM(total) AS total,
+                   AVG(total) AS promedio,
+                   MAX(total) AS maximo,
+                   MIN(total) AS minimo
+            FROM pedidos
+        `;
+        const [filas] = await pool.query(query);
+        return filas[0];
+    }
+
+    // AGGREGATION (SUM + COUNT + JOIN + GROUP BY): cuánto gastó cada cliente
+    async obtenerTotalesPorCliente() {
+        const query = `
+            SELECT c.id_cliente, c.nombre, c.apellido,
+                   COUNT(p.id_pedido) AS pedidos,
+                   IFNULL(SUM(p.total), 0) AS total_gastado
+            FROM clientes c
+            LEFT JOIN pedidos p ON c.id_cliente = p.id_cliente
+            GROUP BY c.id_cliente, c.nombre, c.apellido
+            ORDER BY total_gastado DESC
         `;
         const [filas] = await pool.query(query);
         return filas;

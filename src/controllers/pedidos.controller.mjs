@@ -1,8 +1,7 @@
 import pedidoModel from '../models/pedidos.model.mjs';
 
 class PedidoController {
-    // 1. Agregamos el parámetro next
-    async crear(req, res, next) {
+    async crear(req, res) {
         try {
             const { id_cliente } = req.body;
 
@@ -14,21 +13,31 @@ class PedidoController {
             const resultado = await pedidoModel.crear(req.body);
             res.status(201).json({ mensaje: "Pedido creado exitosamente", id_pedido: resultado.insertId });
         } catch (error) {
-            // 2. Delegamos el error al middleware global
-            next(error);
+            console.error("Error al crear pedido:", error);
+            res.status(500).json({ error: "Error interno del servidor." });
         }
     }
 
-    async obtenerTodos(req, res, next) {
+    async obtenerTodos(req, res) {
         try {
-            const pedidos = await pedidoModel.obtenerTodos();
+            // Los filtros de fecha deben venir en formato YYYY-MM-DD
+            const fechaValida = /^\d{4}-\d{2}-\d{2}$/;
+            for (const parametro of ['desde', 'hasta']) {
+                const valor = req.query[parametro];
+                if (valor !== undefined && valor !== '' && !fechaValida.test(valor)) {
+                    return res.status(400).json({ error: `El parámetro '${parametro}' debe tener formato YYYY-MM-DD.` });
+                }
+            }
+
+            const pedidos = await pedidoModel.obtenerTodos(req.query);
             res.status(200).json(pedidos);
         } catch (error) {
-            next(error);
+            console.error("Error al obtener pedidos:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 
-    async obtenerPorId(req, res, next) {
+    async obtenerPorId(req, res) {
         try {
             const { id } = req.params;
             const pedido = await pedidoModel.obtenerPorId(id);
@@ -39,11 +48,12 @@ class PedidoController {
 
             res.status(200).json(pedido);
         } catch (error) {
-            next(error);
+            console.error("Error al obtener el pedido:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 
-    async actualizar(req, res, next) {
+    async actualizar(req, res) {
         try {
             const { id } = req.params;
             const { id_cliente } = req.body;
@@ -61,11 +71,12 @@ class PedidoController {
 
             res.status(200).json({ mensaje: "Pedido actualizado exitosamente" });
         } catch (error) {
-            next(error);
+            console.error("Error al actualizar pedido:", error);
+            res.status(500).json({ error: "Error interno del servidor." });
         }
     }
 
-    async eliminar(req, res, next) {
+    async eliminar(req, res) {
         try {
             const { id } = req.params;
             const resultado = await pedidoModel.eliminar(id);
@@ -76,13 +87,19 @@ class PedidoController {
 
             res.status(200).json({ mensaje: "Pedido eliminado exitosamente" });
         } catch (error) {
-            // Toda la validación manual de ER_ROW_IS_REFERENCED_2 que hizo tu compañero
-            // ahora es procesada automáticamente por el errorHandler.mjs
-            next(error);
+            console.error("Error al eliminar pedido:", error);
+
+            // Lógica de negocio (manejo de clave foránea)
+            // Si el error es ER_ROW_IS_REFERENCED_2, significa que el pedido ya tiene detalles asociados
+            if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+                return res.status(409).json({ error: "No se puede eliminar el pedido porque tiene productos asociados en sus detalles." });
+            }
+
+            res.status(500).json({ error: "Error interno del servidor." });
         }
     }
 
-    async actualizarParcial(req, res, next) {
+    async actualizarParcial(req, res) {
         try {
             const { id } = req.params;
             const resultado = await pedidoModel.actualizarParcial(id, req.body);
@@ -97,7 +114,30 @@ class PedidoController {
 
             res.status(200).json({ mensaje: "Pedido actualizado parcialmente" });
         } catch (error) {
-            next(error);
+            console.error("Error al actualizar pedido (parcial):", error);
+            res.status(500).json({ error: "Error interno del servidor." });
+        }
+    }
+
+    // AGGREGATION: /api/pedidos/estadisticas (COUNT, SUM, AVG, MAX, MIN)
+    async estadisticas(req, res) {
+        try {
+            const estadisticas = await pedidoModel.obtenerEstadisticas();
+            res.status(200).json(estadisticas);
+        } catch (error) {
+            console.error("Error al obtener estadísticas de pedidos:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
+        }
+    }
+
+    // AGGREGATION: /api/pedidos/totales-por-cliente (SUM + COUNT + JOIN + GROUP BY)
+    async totalesPorCliente(req, res) {
+        try {
+            const totales = await pedidoModel.obtenerTotalesPorCliente();
+            res.status(200).json(totales);
+        } catch (error) {
+            console.error("Error al obtener totales por cliente:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 }

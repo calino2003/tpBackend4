@@ -5,6 +5,7 @@ const router = Router();
 
 router.post('/', proveedorController.crear);
 router.get('/', proveedorController.obtenerTodos);
+router.get('/estadisticas', proveedorController.estadisticas);
 router.get('/:id', proveedorController.obtenerPorId);
 
 // Agregamos las dos rutas nuevas con parámetro ID

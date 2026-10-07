@@ -9,11 +9,44 @@ class ClienteModel {
         return resultado;
     }
 
-    // READ
-    async obtenerTodos() {
-        const query = 'SELECT * FROM clientes';
-        const [filas] = await pool.query(query);
+    // READ (acepta filtrados opcionales: /api/clientes?dni=...&nombre=...)
+    async obtenerTodos(filtros = {}) {
+        // Whititelist: parámetros de la URL → columnas reales de la tabla
+        const mapaFiltros = {
+            dni:      { columna: 'dni' },                  // coincidencia exacta
+            nombre:   { columna: 'nombre', like: true },   // búsqueda parcial
+            apellido: { columna: 'apellido', like: true }
+        };
+
+        const condiciones = [];
+        const valores = [];
+
+        for (const [parametro, regla] of Object.entries(mapaFiltros)) {
+            const valor = filtros[parametro];
+            if (valor === undefined || valor === '') continue;
+
+            if (regla.like) {
+                condiciones.push(`${regla.columna} LIKE ?`);
+                valores.push(`%${valor}%`);
+            } else {
+                const operador = regla.operador || '=';
+                condiciones.push(`${regla.columna} ${operador} ?`);
+                valores.push(valor);
+            }
+        }
+
+        let query = 'SELECT * FROM clientes';
+        if (condiciones.length > 0) query += ` WHERE ${condiciones.join(' AND ')}`;
+
+        const [filas] = await pool.query(query, valores);
         return filas;
+    }
+
+    // AGGREGATION: resumen de clientes (COUNT)
+    async obtenerEstadisticas() {
+        const query = 'SELECT COUNT(*) AS cantidad, COUNT(telefono) AS con_telefono FROM clientes';
+        const [filas] = await pool.query(query);
+        return filas[0];
     }
 
     // READ by ID

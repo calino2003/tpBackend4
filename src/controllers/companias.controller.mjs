@@ -1,7 +1,7 @@
 import companiaModel from '../models/companias.model.mjs';
 
 class CompaniaController {
-    async crear(req, res, next) {
+    async crear(req, res) {
         try {
             const { nombre } = req.body;
 
@@ -12,20 +12,22 @@ class CompaniaController {
             const resultado = await companiaModel.crear(req.body);
             res.status(201).json({ mensaje: "Compañía de envío creada exitosamente", id_compania: resultado.insertId });
         } catch (error) {
-            next(error);
+            console.error("Error al crear compañía de envío:", error);
+            res.status(500).json({ error: "Error interno del servidor." });
         }
     }
 
-    async obtenerTodos(req, res, next) {
+    async obtenerTodos(req, res) {
         try {
-            const companias = await companiaModel.obtenerTodos();
+            const companias = await companiaModel.obtenerTodos(req.query);
             res.status(200).json(companias);
         } catch (error) {
-            next(error);
+            console.error("Error al obtener compañías de envío:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 
-    async obtenerPorId(req, res, next) {
+    async obtenerPorId(req, res) {
         try {
             const { id } = req.params;
             const compania = await companiaModel.obtenerPorId(id);
@@ -36,11 +38,12 @@ class CompaniaController {
 
             res.status(200).json(compania);
         } catch (error) {
-            next(error);
+            console.error("Error al obtener la compañía de envío:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 
-    async actualizar(req, res, next) {
+    async actualizar(req, res) {
         try {
             const { id } = req.params;
             const resultado = await companiaModel.actualizar(id, req.body);
@@ -50,11 +53,12 @@ class CompaniaController {
             }
             res.status(200).json({ mensaje: "Compañía de envío actualizada exitosamente" });
         } catch (error) {
-            next(error);
+            console.error("Error al actualizar compañía de envío:", error);
+            res.status(500).json({ error: "Error interno del servidor." });
         }
     }
 
-    async eliminar(req, res, next) {
+    async eliminar(req, res) {
         try {
             const { id } = req.params;
             const resultado = await companiaModel.eliminar(id);
@@ -64,11 +68,12 @@ class CompaniaController {
             }
             res.status(200).json({ mensaje: "Compañía de envío eliminada exitosamente" });
         } catch (error) {
-            next(error);
+            console.error("Error al eliminar compañía de envío:", error);
+            res.status(500).json({ error: "Error interno del servidor." });
         }
     }
 
-    async actualizarParcial(req, res, next) {
+    async actualizarParcial(req, res) {
         try {
             const { id } = req.params;
             const resultado = await companiaModel.actualizarParcial(id, req.body);
@@ -83,7 +88,19 @@ class CompaniaController {
 
             res.status(200).json({ mensaje: "Compañía de envío actualizada parcialmente" });
         } catch (error) {
-            next(error);
+            console.error("Error al actualizar compañía de envío (parcial):", error);
+            res.status(500).json({ error: "Error interno del servidor." });
+        }
+    }
+
+    // AGGREGATION: /api/companias/estadisticas (COUNT + GROUP BY + JOIN)
+    async estadisticas(req, res) {
+        try {
+            const estadisticas = await companiaModel.obtenerEstadisticas();
+            res.status(200).json(estadisticas);
+        } catch (error) {
+            console.error("Error al obtener estadísticas de compañías:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 }

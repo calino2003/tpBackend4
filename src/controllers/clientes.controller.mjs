@@ -1,8 +1,7 @@
 import clienteModel from '../models/clientes.model.mjs';
 
 class ClienteController {
-    // Agregamos 'next'
-    async crear(req, res, next) {
+    async crear(req, res) {
         try {
             const { nombre, apellido, dni } = req.body;
 
@@ -14,21 +13,22 @@ class ClienteController {
             const resultado = await clienteModel.crear(req.body);
             res.status(201).json({ mensaje: "Cliente creado exitosamente", id_cliente: resultado.insertId });
         } catch (error) {
-            // Delegamos el error al middleware global (ej: DNI duplicado)
-            next(error);
+            console.error("Error al crear cliente:", error);
+            res.status(500).json({ error: "Error interno del servidor." });
         }
     }
 
-    async obtenerTodos(req, res, next) {
+    async obtenerTodos(req, res) {
         try {
-            const clientes = await clienteModel.obtenerTodos();
+            const clientes = await clienteModel.obtenerTodos(req.query);
             res.status(200).json(clientes);
         } catch (error) {
-            next(error);
+            console.error("Error al obtener clientes:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 
-    async obtenerPorId(req, res, next) {
+    async obtenerPorId(req, res) {
         try {
             const { id } = req.params;
             const cliente = await clienteModel.obtenerPorId(id);
@@ -39,11 +39,12 @@ class ClienteController {
 
             res.status(200).json(cliente);
         } catch (error) {
-            next(error);
+            console.error("Error al obtener el cliente:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 
-    async actualizar(req, res, next) {
+    async actualizar(req, res) {
         try {
             const { id } = req.params;
             const resultado = await clienteModel.actualizar(id, req.body);
@@ -53,11 +54,12 @@ class ClienteController {
             }
             res.status(200).json({ mensaje: "Cliente actualizado exitosamente" });
         } catch (error) {
-            next(error);
+            console.error("Error al actualizar cliente:", error);
+            res.status(500).json({ error: "Error interno del servidor." });
         }
     }
 
-    async eliminar(req, res, next) {
+    async eliminar(req, res) {
         try {
             const { id } = req.params;
             const resultado = await clienteModel.eliminar(id);
@@ -67,11 +69,12 @@ class ClienteController {
             }
             res.status(200).json({ mensaje: "Cliente eliminado exitosamente" });
         } catch (error) {
-            next(error);
+            console.error("Error al eliminar cliente:", error);
+            res.status(500).json({ error: "Error interno del servidor." });
         }
     }
 
-    async actualizarParcial(req, res, next) {
+    async actualizarParcial(req, res) {
         try {
             const { id } = req.params;
             const resultado = await clienteModel.actualizarParcial(id, req.body);
@@ -86,7 +89,19 @@ class ClienteController {
 
             res.status(200).json({ mensaje: "Cliente actualizado parcialmente" });
         } catch (error) {
-            next(error);
+            console.error("Error al actualizar cliente (parcial):", error);
+            res.status(500).json({ error: "Error interno del servidor." });
+        }
+    }
+
+    // AGGREGATION: /api/clientes/estadisticas (COUNT)
+    async estadisticas(req, res) {
+        try {
+            const estadisticas = await clienteModel.obtenerEstadisticas();
+            res.status(200).json(estadisticas);
+        } catch (error) {
+            console.error("Error al obtener estadísticas de clientes:", error);
+            res.status(500).json({ error: "Error al consultar la base de datos." });
         }
     }
 }

@@ -13,9 +13,50 @@ class ProveedorModel {
         return resultado;
     }
 
-    // GET: Obtener todos los proveedores
-    async obtenerTodos() {
-        const [filas] = await pool.query('SELECT * FROM PROVEEDORES');
+    // GET: Obtener todos los proveedores (acepta filtrados: /api/proveedores?razon_social=...)
+    async obtenerTodos(filtros = {}) {
+        const mapaFiltros = {
+            razon_social: { columna: 'razon_social', like: true },
+            cuit:         { columna: 'cuit' },
+            email:        { columna: 'email', like: true }
+        };
+
+        const condiciones = [];
+        const valores = [];
+
+        for (const [parametro, regla] of Object.entries(mapaFiltros)) {
+            const valor = filtros[parametro];
+            if (valor === undefined || valor === '') continue;
+
+            if (regla.like) {
+                condiciones.push(`${regla.columna} LIKE ?`);
+                valores.push(`%${valor}%`);
+            } else {
+                const operador = regla.operador || '=';
+                condiciones.push(`${regla.columna} ${operador} ?`);
+                valores.push(valor);
+            }
+        }
+
+        let query = 'SELECT * FROM PROVEEDORES';
+        if (condiciones.length > 0) query += ` WHERE ${condiciones.join(' AND ')}`;
+
+        const [filas] = await pool.query(query, valores);
+        return filas;
+    }
+
+    // AGGREGATION (COUNT + GROUP BY): cuántos productos tiene cada proveedor
+    async obtenerEstadisticas() {
+        const query = `
+            SELECT pr.id_proveedor, pr.razon_social,
+                   COUNT(p.id_producto) AS productos,
+                   IFNULL(SUM(p.stock), 0) AS stock_total
+            FROM PROVEEDORES pr
+            LEFT JOIN productos p ON pr.id_proveedor = p.id_proveedor
+            GROUP BY pr.id_proveedor, pr.razon_social
+            ORDER BY productos DESC
+        `;
+        const [filas] = await pool.query(query);
         return filas;
     }
 
