@@ -1,0 +1,783 @@
+{
+  "info": {
+    "name": "TP IPAP - Distribuidora API Completa",
+    "_postman_id": "b2791e68-326c-4c5f-bce0-405ed3d6f18a",
+    "description": "Colección completa CRUD para todas las tablas de la base de datos (Clientes, Empleados, Compañias, Proveedores, Productos, Pedidos).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Clientes",
+      "item": [
+        {
+          "name": "GET - Todos los clientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/clientes",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "clientes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET - Filtrar por DNI",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/clientes?dni=30123456",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "clientes"
+              ],
+              "query": [
+                {
+                  "key": "dni",
+                  "value": "30123456"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST - Crear cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/clientes",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "clientes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Maria\",\n  \"apellido\": \"Gomez\",\n  \"dni\": \"40111222\",\n  \"direccion\": \"Mitre 123\",\n  \"telefono\": \"2944-998877\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT - Actualizar cliente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/clientes/1",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "clientes",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan Carlos\",\n  \"apellido\": \"Del Castillo\",\n  \"dni\": \"30123456\",\n  \"direccion\": \"San Carlos de Bariloche Centro\",\n  \"telefono\": \"2944-111111\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE - Borrar cliente",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/clientes/2",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "clientes",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ERROR 409 - DNI Duplicado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/clientes",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "clientes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Clon\",\n  \"apellido\": \"Falso\",\n  \"dni\": \"30123456\",\n  \"direccion\": \"Null\",\n  \"telefono\": \"111\"\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Compañias de Envio",
+      "item": [
+        {
+          "name": "GET - Todas las compañias",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/companias_envio",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "companias_envio"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET - Buscar por nombre",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/companias_envio?search=Andreani",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "companias_envio"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Andreani"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST - Crear compañia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/companias_envio",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "companias_envio"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"OCA Logistica\",\n  \"telefono\": \"0800-999-9999\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT - Actualizar compañia",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/companias_envio/1",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "companias_envio",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Andreani Log\\u00edstica S.A.\",\n  \"telefono\": \"0810-122-1122\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE - Borrar compañia",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/companias_envio/2",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "companias_envio",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Empleados",
+      "item": [
+        {
+          "name": "GET - Todos los empleados",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/empleados",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "empleados"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET - Filtrar por cargo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/empleados?cargo=Logística",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "empleados"
+              ],
+              "query": [
+                {
+                  "key": "cargo",
+                  "value": "Logística"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST - Crear empleado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/empleados",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "empleados"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"Lopez\",\n  \"cargo\": \"Vendedora\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT - Actualizar empleado",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/empleados/1",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "empleados",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos\",\n  \"apellido\": \"Gim\\u00e9nez\",\n  \"cargo\": \"Jefe de Log\\u00edstica\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE - Borrar empleado",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/empleados/2",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "empleados",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Proveedores",
+      "item": [
+        {
+          "name": "GET - Todos los proveedores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/proveedores",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "proveedores"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET - Buscar por CUIT",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/proveedores?cuit=30-87654321-0",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "proveedores"
+              ],
+              "query": [
+                {
+                  "key": "cuit",
+                  "value": "30-87654321-0"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST - Crear proveedor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/proveedores",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "proveedores"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"razon_social\": \"Distribuidora del Sur\",\n  \"cuit\": \"30-11223344-5\",\n  \"telefono\": \"2944-555555\",\n  \"email\": \"ventas@delsur.com\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT - Actualizar proveedor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/proveedores/2",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "proveedores",
+                "2"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"razon_social\": \"Mayorista Bariloche SRL Modificado\",\n  \"cuit\": \"30-87654321-0\",\n  \"telefono\": \"2944-654321\",\n  \"email\": \"nuevo@mayoristabrc.com\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE - Borrar proveedor",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/proveedores/3",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "proveedores",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ERROR 409 - CUIT Duplicado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/proveedores",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "proveedores"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"razon_social\": \"Copia SRL\",\n  \"cuit\": \"30-87654321-0\",\n  \"telefono\": \"123\",\n  \"email\": \"fake@fake.com\"\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Productos",
+      "item": [
+        {
+          "name": "GET - Todos los productos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/productos",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "productos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET - Filtrar por Proveedor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/productos?id_proveedor=2",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "productos"
+              ],
+              "query": [
+                {
+                  "key": "id_proveedor",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST - Crear producto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/productos",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "productos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Sprite 2.25L\",\n  \"descripcion\": \"Gaseosa lima limon retornable\",\n  \"precio_unitario\": 2300.0,\n  \"stock\": 50,\n  \"id_proveedor\": 2\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT - Actualizar stock/precio",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/productos/1",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "productos",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Coca Cola 2.25L\",\n  \"descripcion\": \"Gaseosa sabor cola\",\n  \"precio_unitario\": 2800.0,\n  \"stock\": 85,\n  \"id_proveedor\": 2\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE - Borrar producto",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/productos/2",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "productos",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ERROR 400 - Precio o stock negativo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/productos",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "productos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Error Prod\",\n  \"descripcion\": \"test\",\n  \"precio_unitario\": -10,\n  \"stock\": -5,\n  \"id_proveedor\": 2\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Pedidos (Facturación)",
+      "item": [
+        {
+          "name": "GET - Todos los pedidos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/pedidos",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "pedidos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET - Historial por cliente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/pedidos?id_cliente=1",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "pedidos"
+              ],
+              "query": [
+                {
+                  "key": "id_cliente",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST - Crear pedido con detalles",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/pedidos",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "pedidos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_cliente\": 1,\n  \"id_empleado\": 1,\n  \"id_compania\": 1,\n  \"detalles\": [\n    {\n      \"id_producto\": 1,\n      \"cantidad\": 3,\n      \"precio_unitario\": 2500.5\n    }\n  ]\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE - Anular pedido",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/pedidos/1",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "pedidos",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ERROR 400 - Pedido sin detalles",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/pedidos",
+              "host": [
+                "http://localhost:3000/api"
+              ],
+              "path": [
+                "pedidos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_cliente\": 1,\n  \"id_empleado\": 1,\n  \"id_compania\": 1,\n  \"detalles\": []\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
