@@ -97,7 +97,6 @@ class ProductoController {
         }
     }
 
-    // AGGREGATION: /api/productos/estadisticas (COUNT, SUM, AVG, MAX, MIN)
     async estadisticas(req, res) {
         try {
             const estadisticas = await productoModel.obtenerEstadisticas();

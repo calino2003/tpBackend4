@@ -50,7 +50,6 @@ class DetallePedidoController {
         }
     }
 
-    // AGGREGATION: /api/detalles/mas-vendidos (SUM + JOIN + GROUP BY)
     async productosMasVendidos(req, res) {
         try {
             const productos = await detallePedidoModel.obtenerProductosMasVendidos();

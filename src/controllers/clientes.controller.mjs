@@ -1,4 +1,5 @@
 import clienteModel from '../models/clientes.model.mjs';
+// Leo, fijate de ver como el profe trabajó con clases y lo pasó al model.
 
 class ClienteController {
     async crear(req, res) {
@@ -94,7 +95,7 @@ class ClienteController {
         }
     }
 
-    // AGGREGATION: /api/clientes/estadisticas (COUNT)
+    // agregación del método estadisticas para obtener el resumen de clientes
     async estadisticas(req, res) {
         try {
             const estadisticas = await clienteModel.obtenerEstadisticas();

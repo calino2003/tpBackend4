@@ -1,7 +1,6 @@
 import pool from '../config/db.mjs';
 
 class DetallePedidoModel {
-    // CREATE: Insertar una línea de producto en el pedido
     async crear(detalle) {
         const { id_pedido, id_producto, cantidad, subtotal } = detalle;
         const query = 'INSERT INTO detalles_pedido (id_pedido, id_producto, cantidad, subtotal) VALUES (?, ?, ?, ?)';
@@ -9,7 +8,6 @@ class DetallePedidoModel {
         return resultado;
     }
 
-    // READ: Detalles de un pedido específico (filtro opcional: /api/detalles/pedido/1?producto=1)
     async obtenerPorPedido(id_pedido, filtros = {}) {
         const condiciones = ['dp.id_pedido = ?'];
         const valores = [id_pedido];
@@ -35,7 +33,6 @@ class DetallePedidoModel {
         return filas;
     }
 
-    // AGGREGATION (SUM + JOIN + GROUP BY): productos más vendidos
     async obtenerProductosMasVendidos() {
         const query = `
             SELECT p.id_producto, p.nombre,

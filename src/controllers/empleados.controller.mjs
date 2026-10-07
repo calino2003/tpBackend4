@@ -93,7 +93,6 @@ class EmpleadoController {
         }
     }
 
-    // AGGREGATION: /api/empleados/estadisticas (SUM + COUNT + GROUP BY + JOIN)
     async estadisticas(req, res) {
         try {
             const estadisticas = await empleadoModel.obtenerEstadisticas();

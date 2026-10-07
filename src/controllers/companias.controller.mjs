@@ -93,7 +93,7 @@ class CompaniaController {
         }
     }
 
-    // AGGREGATION: /api/companias/estadisticas (COUNT + GROUP BY + JOIN)
+    // Agregación: /api/companias/estadisticas (COUNT + GROUP BY + JOIN)
     async estadisticas(req, res) {
         try {
             const estadisticas = await companiaModel.obtenerEstadisticas();

@@ -1,5 +1,6 @@
 import pool from '../config/db.mjs';
 
+//Listo! El segundo video trata de como pasar del controlador al modelo, y como hacer que el modelo haga la consulta a la base de datos.
 class ClienteModel {
     // CREATE
     async crear(cliente) {

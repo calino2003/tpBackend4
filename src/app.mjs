@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// 2. Conectamos la ruta. Cualquier petición a /api/proveedores será manejada por nuestro router
+// acá vamos a poder conectarnos la ruta. Cualquier petición que se haga a /api/proveedores lo va a manejada nuestro router
 app.use('/api/proveedores', proveedoresRoutes);
 
 app.get('/api/ping', async (req, res) => {

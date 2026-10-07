@@ -20,7 +20,7 @@ class PedidoController {
 
     async obtenerTodos(req, res) {
         try {
-            // Los filtros de fecha deben venir en formato YYYY-MM-DD
+            // Los filtros de fecha están en este formato YYYY-MM-DD
             const fechaValida = /^\d{4}-\d{2}-\d{2}$/;
             for (const parametro of ['desde', 'hasta']) {
                 const valor = req.query[parametro];
@@ -58,7 +58,7 @@ class PedidoController {
             const { id } = req.params;
             const { id_cliente } = req.body;
 
-            // Mantenemos la regla de negocio: un pedido no puede quedar huérfano de cliente
+            // Acá mantenemos la regla de negocio: No hay pedido fantasma, necesitamos un cliente
             if (!id_cliente) {
                 return res.status(400).json({ error: "El id_cliente es obligatorio para actualizar el pedido." });
             }
@@ -119,7 +119,6 @@ class PedidoController {
         }
     }
 
-    // AGGREGATION: /api/pedidos/estadisticas (COUNT, SUM, AVG, MAX, MIN)
     async estadisticas(req, res) {
         try {
             const estadisticas = await pedidoModel.obtenerEstadisticas();
@@ -130,7 +129,6 @@ class PedidoController {
         }
     }
 
-    // AGGREGATION: /api/pedidos/totales-por-cliente (SUM + COUNT + JOIN + GROUP BY)
     async totalesPorCliente(req, res) {
         try {
             const totales = await pedidoModel.obtenerTotalesPorCliente();

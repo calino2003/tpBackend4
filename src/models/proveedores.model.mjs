@@ -5,7 +5,7 @@ class ProveedorModel {
     async crear(proveedor) {
         const { razon_social, cuit, telefono, email } = proveedor;
 
-        // Cumplimos con la seguridad exigida usando consultas parametrizadas (?) para evitar Inyección SQL
+        // (?) para evitar Inyección SQL
         const query = 'INSERT INTO PROVEEDORES (razon_social, cuit, telefono, email) VALUES (?, ?, ?, ?)';
 
         // Usamos execute en lugar de query cuando pasamos parámetros dinámicos
@@ -13,7 +13,7 @@ class ProveedorModel {
         return resultado;
     }
 
-    // GET: Obtener todos los proveedores (acepta filtrados: /api/proveedores?razon_social=...)
+    // GET: Obtener todos los proveedores (acepta filtrados /api/proveedores?razon_social=...)
     async obtenerTodos(filtros = {}) {
         const mapaFiltros = {
             razon_social: { columna: 'razon_social', like: true },
