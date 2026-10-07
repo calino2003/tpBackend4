@@ -18,14 +18,8 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `distribuidora`
+-- Base de datos: `database`
 --
--- ========================================================
--- ACÁ AGREGAMOS LA CREACIÓN DE LA BASE DE DATOS
-CREATE DATABASE IF NOT EXISTS distribuidora;
-USE distribuidora;
--- ========================================================
--- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `clientes`
