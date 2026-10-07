@@ -1,7 +1,8 @@
 import productoModel from '../models/productos.model.mjs';
 
 class ProductoController {
-    async crear(req, res) {
+    // 1. Inyectamos 'next'
+    async crear(req, res, next) {
         try {
             const { nombre, precio_unitario } = req.body;
             if (!nombre || !precio_unitario) {
@@ -10,22 +11,21 @@ class ProductoController {
             const resultado = await productoModel.crear(req.body);
             res.status(201).json({ mensaje: "Producto creado exitosamente", id_producto: resultado.insertId });
         } catch (error) {
-            console.error("Error al crear producto:", error);
-            res.status(500).json({ error: "Error interno del servidor." });
+            // 2. Delegamos. Ataja errores como proveedor inexistente
+            next(error);
         }
     }
 
-    async obtenerTodos(req, res) {
+    async obtenerTodos(req, res, next) {
         try {
             const productos = await productoModel.obtenerTodos();
             res.status(200).json(productos);
         } catch (error) {
-            console.error("Error al obtener productos:", error);
-            res.status(500).json({ error: "Error al consultar la base de datos." });
+            next(error);
         }
     }
 
-    async obtenerPorId(req, res) {
+    async obtenerPorId(req, res, next) {
         try {
             const { id } = req.params;
             const producto = await productoModel.obtenerPorId(id);
@@ -36,12 +36,11 @@ class ProductoController {
 
             res.status(200).json(producto);
         } catch (error) {
-            console.error("Error al obtener el producto:", error);
-            res.status(500).json({ error: "Error al consultar la base de datos." });
+            next(error);
         }
     }
 
-    async actualizar(req, res) {
+    async actualizar(req, res, next) {
         try {
             const { id } = req.params;
             const resultado = await productoModel.actualizar(id, req.body);
@@ -50,12 +49,11 @@ class ProductoController {
             }
             res.status(200).json({ mensaje: "Producto actualizado exitosamente" });
         } catch (error) {
-            console.error("Error al actualizar producto:", error);
-            res.status(500).json({ error: "Error interno del servidor." });
+            next(error);
         }
     }
 
-    async eliminar(req, res) {
+    async eliminar(req, res, next) {
         try {
             const { id } = req.params;
             const resultado = await productoModel.eliminar(id);
@@ -64,12 +62,12 @@ class ProductoController {
             }
             res.status(200).json({ mensaje: "Producto eliminado exitosamente" });
         } catch (error) {
-            console.error("Error al eliminar producto:", error);
-            res.status(500).json({ error: "Error interno del servidor." });
+            // Ataja el error si el producto ya está en un pedido
+            next(error);
         }
     }
 
-    async actualizarParcial(req, res) {
+    async actualizarParcial(req, res, next) {
         try {
             const { id } = req.params;
             const resultado = await productoModel.actualizarParcial(id, req.body);
@@ -84,8 +82,7 @@ class ProductoController {
 
             res.status(200).json({ mensaje: "Producto actualizado parcialmente" });
         } catch (error) {
-            console.error("Error al actualizar producto (parcial):", error);
-            res.status(500).json({ error: "Error interno del servidor." });
+            next(error);
         }
     }
 }

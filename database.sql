@@ -20,7 +20,11 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `distribuidora`
 --
-
+-- ========================================================
+-- ACÁ AGREGAMOS LA CREACIÓN DE LA BASE DE DATOS
+CREATE DATABASE IF NOT EXISTS distribuidora;
+USE distribuidora;
+-- ========================================================
 -- --------------------------------------------------------
 
 --

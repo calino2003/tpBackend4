@@ -1,7 +1,8 @@
 import detallePedidoModel from '../models/detalles_pedido.model.mjs';
 
 class DetallePedidoController {
-    async crear(req, res) {
+    // Agregamos 'next'
+    async crear(req, res, next) {
         try {
             const { id_pedido, id_producto, cantidad, subtotal } = req.body;
 
@@ -12,12 +13,12 @@ class DetallePedidoController {
             const resultado = await detallePedidoModel.crear(req.body);
             res.status(201).json({ mensaje: "Detalle agregado al pedido exitosamente", id_detalle: resultado.insertId });
         } catch (error) {
-            console.error("Error al crear detalle:", error);
-            res.status(500).json({ error: "Error interno del servidor." });
+            // Si el producto o el pedido no existen en la BD, el middleware global lo ataja acá
+            next(error);
         }
     }
 
-    async obtenerPorPedido(req, res) {
+    async obtenerPorPedido(req, res, next) {
         try {
             // En este caso, el ID del pedido viene por la URL (ej: /api/detalles/pedido/1)
             const { id_pedido } = req.params;
@@ -25,12 +26,11 @@ class DetallePedidoController {
 
             res.status(200).json(detalles);
         } catch (error) {
-            console.error("Error al obtener detalles:", error);
-            res.status(500).json({ error: "Error al consultar la base de datos." });
+            next(error);
         }
     }
 
-    async actualizarParcial(req, res) {
+    async actualizarParcial(req, res, next) {
         try {
             const { id } = req.params;
             const resultado = await detallePedidoModel.actualizarParcial(id, req.body);
@@ -45,8 +45,7 @@ class DetallePedidoController {
 
             res.status(200).json({ mensaje: "Detalle actualizado parcialmente" });
         } catch (error) {
-            console.error("Error al actualizar detalle (parcial):", error);
-            res.status(500).json({ error: "Error interno del servidor." });
+            next(error);
         }
     }
 }

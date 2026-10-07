@@ -1,31 +1,34 @@
 import proveedorModel from '../models/proveedores.model.mjs';
 
 class ProveedorController {
-    async crear(req, res) {
+    // 1. Agregamos el parámetro 'next'
+    async crear(req, res, next) {
         try {
             const { razon_social, cuit } = req.body;
+            
+            // Validación de negocio intacta
             if (!razon_social || !cuit) {
                 return res.status(400).json({ error: "La razón social y el CUIT son obligatorios" });
             }
+            
             const resultado = await proveedorModel.crear(req.body);
             res.status(201).json({ mensaje: "Proveedor creado exitosamente", id_proveedor: resultado.insertId });
         } catch (error) {
-            console.error("Error al crear proveedor:", error);
-            res.status(500).json({ error: "Error interno del servidor al procesar el proveedor." });
+            // 2. Delegamos el error (ej: CUIT duplicado)
+            next(error);
         }
     }
 
-    async obtenerTodos(req, res) {
+    async obtenerTodos(req, res, next) {
         try {
             const proveedores = await proveedorModel.obtenerTodos();
             res.status(200).json(proveedores);
         } catch (error) {
-            console.error("Error al obtener proveedores:", error);
-            res.status(500).json({ error: "Error al consultar la base de datos." });
+            next(error);
         }
     }
 
-    async obtenerPorId(req, res) {
+    async obtenerPorId(req, res, next) {
         try {
             const { id } = req.params;
             const proveedor = await proveedorModel.obtenerPorId(id);
@@ -36,12 +39,11 @@ class ProveedorController {
 
             res.status(200).json(proveedor);
         } catch (error) {
-            console.error("Error al obtener el proveedor:", error);
-            res.status(500).json({ error: "Error al consultar la base de datos." });
+            next(error);
         }
     }
 
-    async actualizar(req, res) {
+    async actualizar(req, res, next) {
         try {
             const { id } = req.params;
             const resultado = await proveedorModel.actualizar(id, req.body);
@@ -51,12 +53,11 @@ class ProveedorController {
             }
             res.status(200).json({ mensaje: "Proveedor actualizado exitosamente" });
         } catch (error) {
-            console.error("Error al actualizar proveedor:", error);
-            res.status(500).json({ error: "Error interno del servidor." });
+            next(error);
         }
     }
 
-    async eliminar(req, res) {
+    async eliminar(req, res, next) {
         try {
             const { id } = req.params;
             const resultado = await proveedorModel.eliminar(id);
@@ -66,12 +67,12 @@ class ProveedorController {
             }
             res.status(200).json({ mensaje: "Proveedor eliminado exitosamente" });
         } catch (error) {
-            console.error("Error al eliminar proveedor:", error);
-            res.status(500).json({ error: "Error interno del servidor." });
+            // Ataja si se intenta borrar un proveedor que ya tiene productos asociados
+            next(error);
         }
     }
 
-    async actualizarParcial(req, res) {
+    async actualizarParcial(req, res, next) {
         try {
             const { id } = req.params;
             const resultado = await proveedorModel.actualizarParcial(id, req.body);
@@ -86,8 +87,7 @@ class ProveedorController {
 
             res.status(200).json({ mensaje: "Proveedor actualizado parcialmente" });
         } catch (error) {
-            console.error("Error al actualizar proveedor (parcial):", error);
-            res.status(500).json({ error: "Error interno del servidor." });
+            next(error);
         }
     }
 }

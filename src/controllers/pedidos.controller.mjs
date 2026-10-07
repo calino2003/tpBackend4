@@ -1,7 +1,8 @@
 import pedidoModel from '../models/pedidos.model.mjs';
 
 class PedidoController {
-    async crear(req, res) {
+    // 1. Agregamos el parámetro next
+    async crear(req, res, next) {
         try {
             const { id_cliente } = req.body;
 
@@ -13,22 +14,21 @@ class PedidoController {
             const resultado = await pedidoModel.crear(req.body);
             res.status(201).json({ mensaje: "Pedido creado exitosamente", id_pedido: resultado.insertId });
         } catch (error) {
-            console.error("Error al crear pedido:", error);
-            res.status(500).json({ error: "Error interno del servidor." });
+            // 2. Delegamos el error al middleware global
+            next(error);
         }
     }
 
-    async obtenerTodos(req, res) {
+    async obtenerTodos(req, res, next) {
         try {
             const pedidos = await pedidoModel.obtenerTodos();
             res.status(200).json(pedidos);
         } catch (error) {
-            console.error("Error al obtener pedidos:", error);
-            res.status(500).json({ error: "Error al consultar la base de datos." });
+            next(error);
         }
     }
 
-    async obtenerPorId(req, res) {
+    async obtenerPorId(req, res, next) {
         try {
             const { id } = req.params;
             const pedido = await pedidoModel.obtenerPorId(id);
@@ -39,12 +39,11 @@ class PedidoController {
 
             res.status(200).json(pedido);
         } catch (error) {
-            console.error("Error al obtener el pedido:", error);
-            res.status(500).json({ error: "Error al consultar la base de datos." });
+            next(error);
         }
     }
 
-    async actualizar(req, res) {
+    async actualizar(req, res, next) {
         try {
             const { id } = req.params;
             const { id_cliente } = req.body;
@@ -62,12 +61,11 @@ class PedidoController {
 
             res.status(200).json({ mensaje: "Pedido actualizado exitosamente" });
         } catch (error) {
-            console.error("Error al actualizar pedido:", error);
-            res.status(500).json({ error: "Error interno del servidor." });
+            next(error);
         }
     }
 
-    async eliminar(req, res) {
+    async eliminar(req, res, next) {
         try {
             const { id } = req.params;
             const resultado = await pedidoModel.eliminar(id);
@@ -78,19 +76,13 @@ class PedidoController {
 
             res.status(200).json({ mensaje: "Pedido eliminado exitosamente" });
         } catch (error) {
-            console.error("Error al eliminar pedido:", error);
-
-            // Lógica de negocio (manejo de clave foránea)
-            // Si el error es ER_ROW_IS_REFERENCED_2, significa que el pedido ya tiene detalles asociados
-            if (error.code === 'ER_ROW_IS_REFERENCED_2') {
-                return res.status(409).json({ error: "No se puede eliminar el pedido porque tiene productos asociados en sus detalles." });
-            }
-
-            res.status(500).json({ error: "Error interno del servidor." });
+            // Toda la validación manual de ER_ROW_IS_REFERENCED_2 que hizo tu compañero
+            // ahora es procesada automáticamente por el errorHandler.mjs
+            next(error);
         }
     }
 
-    async actualizarParcial(req, res) {
+    async actualizarParcial(req, res, next) {
         try {
             const { id } = req.params;
             const resultado = await pedidoModel.actualizarParcial(id, req.body);
@@ -105,8 +97,7 @@ class PedidoController {
 
             res.status(200).json({ mensaje: "Pedido actualizado parcialmente" });
         } catch (error) {
-            console.error("Error al actualizar pedido (parcial):", error);
-            res.status(500).json({ error: "Error interno del servidor." });
+            next(error);
         }
     }
 }
